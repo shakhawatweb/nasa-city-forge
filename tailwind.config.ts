@@ -17,8 +17,19 @@ export default {
 				'2xl': '1400px'
 			}
 		},
+		fontFamily: {
+			'space': ['Space Grotesk', 'system-ui', 'sans-serif'],
+			'inter': ['Inter', 'system-ui', 'sans-serif'],
+			'code': ['Fira Code', 'Courier New', 'monospace'],
+		},
 		extend: {
 			colors: {
+				'nasa-blue': 'hsl(220 100% 31%)',
+				'nasa-red': 'hsl(10 95% 55%)', 
+				'vegetation-green': 'hsl(142 71% 45%)',
+				'space-black': 'hsl(220 15% 12%)',
+				'cosmic-purple': 'hsl(260 60% 25%)',
+				
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',

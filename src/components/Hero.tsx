@@ -1,8 +1,10 @@
 import { ArrowRight, Globe, TrendingUp, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import heroImage from "@/assets/hero-earth-data.jpg";
 
 const Hero = () => {
+  const navigate = useNavigate();
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image */}
@@ -57,10 +59,14 @@ const Hero = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <Button size="lg" className="bg-white text-primary hover:bg-white/90 space-glow font-semibold px-8">
-              Start Exploring
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
+          <Button 
+            size="lg" 
+            className="bg-white text-primary hover:bg-white/90 space-glow font-semibold px-8"
+            onClick={() => navigate('/dashboard')}
+          >
+            Start Exploring
+            <ArrowRight className="w-5 h-5 ml-2" />
+          </Button>
             <Button variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10 backdrop-blur-sm">
               View Demo
             </Button>

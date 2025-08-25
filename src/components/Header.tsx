@@ -1,7 +1,11 @@
 import { Satellite, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const navigate = useNavigate();
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -27,10 +31,15 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center space-x-3">
+          <ThemeToggle />
           <Button variant="outline" size="sm" className="hidden md:flex">
             Sign In
           </Button>
-          <Button size="sm" className="space-glow">
+          <Button 
+            size="sm" 
+            className="space-glow"
+            onClick={() => navigate('/dashboard')}
+          >
             Start Exploring
           </Button>
           <Button variant="ghost" size="sm" className="md:hidden">

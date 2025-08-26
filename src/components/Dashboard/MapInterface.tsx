@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -17,6 +17,21 @@ interface MapInterfaceProps {
   analysisData: any;
 }
 
+// Component to handle map events
+const MapEvents = ({ onAreaSelect }: { onAreaSelect: (area: any) => void }) => {
+  useMapEvents({
+    click: (e) => {
+      const { lat, lng } = e.latlng;
+      onAreaSelect({
+        name: `${lat.toFixed(4)}, ${lng.toFixed(4)}`,
+        coordinates: { lat, lng },
+        type: 'click'
+      });
+    },
+  });
+  return null;
+};
+
 const MapInterface = ({ selectedArea, onAreaSelect, analysisData }: MapInterfaceProps) => {
   const [mapCenter, setMapCenter] = useState<[number, number]>([40.7128, -74.0060]); // NYC default
   const [mapZoom, setMapZoom] = useState(10);
@@ -29,15 +44,6 @@ const MapInterface = ({ selectedArea, onAreaSelect, analysisData }: MapInterface
       setMapZoom(12);
     }
   }, [selectedArea]);
-
-  const handleMapClick = (e: L.LeafletMouseEvent) => {
-    const { lat, lng } = e.latlng;
-    onAreaSelect({
-      name: `${lat.toFixed(4)}, ${lng.toFixed(4)}`,
-      coordinates: { lat, lng },
-      type: 'click'
-    });
-  };
 
   // Mock heat island overlay
   const heatOverlays = selectedArea ? [
@@ -54,16 +60,17 @@ const MapInterface = ({ selectedArea, onAreaSelect, analysisData }: MapInterface
         className="h-full w-full"
         ref={mapRef}
       >
+        <MapEvents onAreaSelect={onAreaSelect} />
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
         
-        {/* NASA Satellite Layer (Mock) */}
+        {/* NASA Satellite Layer - Using working MODIS endpoint */}
         <TileLayer
-          url="https://map1.vis.earthdata.nasa.gov/wmts-webmerc/MODIS_Terra_CorrectedReflectance_TrueColor/default/{time}/{tilematrixset}{max_zoom}/{z}/{y}/{x}.jpg"
+          url="https://map1.vis.earthdata.nasa.gov/wmts-webmerc/MODIS_Aqua_CorrectedReflectance_TrueColor/default/2024-01-01/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg"
           attribution="NASA Worldview"
-          opacity={0.6}
+          opacity={0.3}
         />
 
         {/* Selected Area Marker */}

@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
+import { useState } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -17,39 +17,28 @@ interface MapInterfaceProps {
   analysisData: any;
 }
 
-const MapInterface = ({ selectedArea, onAreaSelect, analysisData }: MapInterfaceProps) => {
-  const [mapCenter, setMapCenter] = useState<[number, number]>([40.7128, -74.0060]); // NYC default
-  const [mapZoom, setMapZoom] = useState(10);
-  const mapRef = useRef<L.Map>(null);
-
-  useEffect(() => {
-    if (selectedArea?.coordinates) {
-      const { lat, lng } = selectedArea.coordinates;
-      setMapCenter([lat, lng]);
-      setMapZoom(12);
-    }
-  }, [selectedArea]);
-
-  // Set up map click handler after map is ready
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-
-    const handleMapClick = (e: L.LeafletMouseEvent) => {
+// Component to handle map events using React Leaflet's proper event handling
+const MapEvents = ({ onAreaSelect }: { onAreaSelect: (area: any) => void }) => {
+  useMapEvents({
+    click: (e) => {
       const { lat, lng } = e.latlng;
       onAreaSelect({
         name: `${lat.toFixed(4)}, ${lng.toFixed(4)}`,
         coordinates: { lat, lng },
         type: 'click'
       });
-    };
+    },
+  });
+  return null;
+};
 
-    map.on('click', handleMapClick);
-    
-    return () => {
-      map.off('click', handleMapClick);
-    };
-  }, [onAreaSelect]);
+const MapInterface = ({ selectedArea, onAreaSelect, analysisData }: MapInterfaceProps) => {
+  // Calculate map center and zoom based on selected area
+  const mapCenter: [number, number] = selectedArea?.coordinates 
+    ? [selectedArea.coordinates.lat, selectedArea.coordinates.lng]
+    : [40.7128, -74.0060]; // NYC default
+  
+  const mapZoom = selectedArea?.coordinates ? 12 : 10;
 
   // Mock heat island overlay
   const heatOverlays = selectedArea ? [
@@ -64,8 +53,9 @@ const MapInterface = ({ selectedArea, onAreaSelect, analysisData }: MapInterface
         center={mapCenter}
         zoom={mapZoom}
         className="h-full w-full"
-        ref={mapRef}
+        key={`${mapCenter[0]}-${mapCenter[1]}-${mapZoom}`} // Force re-render when center changes
       >
+        <MapEvents onAreaSelect={onAreaSelect} />
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
